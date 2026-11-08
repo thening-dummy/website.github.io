@@ -211,6 +211,8 @@ h1 em, h2 em { font-weight: 400; }
 .page-intro .eyebrow { align-self: start; padding-top: 10px; }
 .page-intro h2 { margin: 0; }
 .page-intro .body-copy { max-width: 370px; margin: 0; }
+@media (min-width: 821px) { .page-intro.dining-intro { grid-template-columns: 1fr 1fr; } }
+.dining-intro .body-copy { text-align: justify; }
 .stay-list { padding-top: 20px; padding-bottom: 100px; }
 .stay-row { padding: 36px 0; display: grid; grid-template-columns: 1.1fr .9fr; align-items: center; gap: 8%; border-top: 1px solid var(--line); scroll-margin-top: 30px; }
 .stay-row.reverse .stay-gallery { order: 2; }
@@ -238,6 +240,8 @@ h1 em, h2 em { font-weight: 400; }
 .feature-split > div { max-width: 385px; }
 .feature-split h2 { margin-bottom: 18px; }
 .feature-split .body-copy { margin-bottom: 21px; }
+.dining-restaurant .body-copy { text-align: justify; }
+main > .feature-split.reverse .body-copy { text-align: justify; }
 .detail-line { margin: 24px 0; color: var(--muted); font-size: 8px; letter-spacing: 1.2px; }
 .wellness-grid { padding-top: 15px; }
 .wellness-grid article { border-bottom: 1px solid var(--line); padding-bottom: 24px; }
@@ -292,18 +296,25 @@ h1 em, h2 em { font-weight: 400; }
 }
 .rooms-hero { height: min(560px, 60vw); min-height: 420px; }
 .rooms-hero .page-hero-image { --hero-overlay: linear-gradient(90deg, rgba(18,28,22,.57), rgba(18,28,22,.08) 75%); background-image: var(--hero-overlay), url("assets/images/rooms/room-hero.webp"); }
+.dining-hero { height: min(560px, 60vw); min-height: 420px; }
+.dining-hero .page-hero-image { --hero-overlay: linear-gradient(90deg, rgba(18,28,22,.57), rgba(18,28,22,.08) 75%); background-image: var(--hero-overlay), url("assets/images/dining/dining-hero.webp"); }
+.dining-restaurant { background: var(--paper-deep); }
+.dining-gallery { position: relative; min-width: 0; overflow: hidden; }
+.dining-gallery-controls { right: 12px; bottom: 12px; }
+.feature-split.reverse .dining-gallery { order: 2; }
+@media (max-width: 600px) { .feature-split.reverse .dining-gallery { order: 0; } }
 .rooms-intro { grid-template-columns: minmax(0, 1fr); gap: 16px; }
 .rooms-intro .body-copy { grid-column: auto; max-width: none; text-align: justify; }
-.rooms-hero .page-hero-image {
+.page-hero[data-smooth-slides] .page-hero-image {
   animation: none;
   opacity: 0;
   transform: scale(1.08);
   transition: opacity 1.6s ease-in-out, transform 6s ease-out;
 }
-.rooms-hero .page-hero-image.is-active { opacity: 1; transform: scale(1.01); }
+.page-hero[data-smooth-slides] .page-hero-image.is-active { opacity: 1; transform: scale(1.01); }
 .stay-gallery img { width: 100%; object-fit: cover; }
 @media (max-width: 600px) {
-  .rooms-hero { height: min(430px, 105vw); min-height: 340px; }
+  .rooms-hero, .dining-hero { height: min(430px, 105vw); min-height: 340px; }
   .rooms-intro { padding-top: 58px; padding-bottom: 38px; grid-template-columns: 1fr; gap: 12px; }
   .rooms-intro .body-copy { max-width: 430px; }
   .stay-list { padding-top: 4px; }
@@ -405,6 +416,26 @@ h1 em, h2 em { font-weight: 400; }
   .room-explore-card { height: 225px; flex-basis: 78%; }
   .room-explore-arrow-previous { margin-left: -18px; }
   .room-explore-arrow-next { margin-right: -18px; }
+}
+.dining-experience-section { background: var(--paper-deep); color: var(--ink); }
+.dining-experience-section > h2 { margin-bottom: 24px; font-family: var(--serif); font-size: clamp(26px, 3vw, 36px); font-weight: 400; line-height: 1.08; text-align: center; }
+.dining-experience-description { max-width: 650px; margin: -10px auto 24px; color: var(--muted); font-size: 13px; text-align: justify; }
+.dining-experience-track { gap: 18px; }
+.dining-experience-card { min-width: 0; flex: 0 0 calc((100% - 36px) / 3); overflow: hidden; scroll-snap-align: start; background: #fff; color: var(--ink); }
+.dining-experience-card img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; transition: transform .45s ease; }
+.dining-experience-card:hover img { transform: scale(1.04); }
+.dining-experience-card-content { padding: 8px 10px 12px; }
+.dining-experience-card h3 { margin: 0 0 2px; font-family: var(--serif); font-size: 18px; font-weight: 400; line-height: 1.3; }
+.dining-experience-card p { margin: 0; color: #48566b; font-family: "DM Sans", sans-serif; font-size: 12px; line-height: 1.45; }
+.dining-experience-card .text-link { margin-top: 8px; font-family: "DM Sans", sans-serif; }
+@media (max-width: 820px) {
+  .dining-experience-card { flex-basis: calc((100% - 18px) / 2); }
+}
+@media (max-width: 600px) {
+  .dining-experience-section { padding-top: 36px; padding-bottom: 40px; }
+  .dining-experience-section > h2 { text-align: left; }
+  .dining-experience-description { margin: -10px 0 20px; }
+  .dining-experience-card { flex-basis: 82%; }
 }
 @media (max-width: 820px) {
   .booking-room-picker { grid-column: 1 / -1; padding-right: 0; padding-left: 0; border-right: 0; }

@@ -10,14 +10,31 @@ document.addEventListener('dragstart', (event) => {
   if (event.target instanceof HTMLImageElement) event.preventDefault();
 });
 
-document.querySelectorAll('.room-detail-gallery[data-room-gallery]').forEach((gallery) => {
+document.querySelectorAll('.dining-restaurant > img, main > .feature-split.reverse > img').forEach((image) => {
+  const isRoseBar = image.closest('.feature-split').classList.contains('reverse');
+  const name = isRoseBar ? 'Rose Bar' : 'Orchid Restaurant';
+  const folder = isRoseBar ? 'rose-slide/rose' : 'orchid-slide/orchid';
+  const gallery = document.createElement('div');
+  gallery.className = 'dining-gallery';
+  gallery.dataset.gallerySlides = Array.from({ length: 5 }, (_, index) => `assets/images/dining/${folder}-${index + 1}.webp`).join(',');
+  gallery.dataset.galleryAlt = name;
+  gallery.setAttribute('role', 'group');
+  gallery.setAttribute('aria-label', `${name} photo gallery`);
+  image.before(gallery);
+  gallery.append(image);
+});
+
+document.querySelectorAll('.room-detail-gallery[data-room-gallery], .dining-gallery[data-gallery-slides]').forEach((gallery) => {
   const image = gallery.querySelector('img');
   const category = gallery.dataset.roomGallery;
-  if (!image || !category) return;
+  const isDiningGallery = gallery.classList.contains('dining-gallery');
+  if (!image || (!category && !isDiningGallery)) return;
 
-  const slides = Array.from({ length: 5 }, (_, index) => `../assets/images/rooms/rooms-slide/${category}-${index + 1}.webp`);
+  const slides = gallery.dataset.gallerySlides
+    ? gallery.dataset.gallerySlides.split(',')
+    : Array.from({ length: 5 }, (_, index) => `../assets/images/rooms/rooms-slide/${category}-${index + 1}.webp`);
   const controls = document.createElement('div');
-  controls.className = 'room-detail-gallery-controls';
+  controls.className = `room-detail-gallery-controls${isDiningGallery ? ' dining-gallery-controls' : ''}`;
   controls.setAttribute('role', 'group');
   controls.setAttribute('aria-label', 'Photo slideshow controls');
 
@@ -31,6 +48,7 @@ document.querySelectorAll('.room-detail-gallery[data-room-gallery]').forEach((ga
   const showSlide = (index) => {
     currentSlide = (index + slides.length) % slides.length;
     image.src = slides[currentSlide];
+    if (isDiningGallery) image.alt = `${gallery.dataset.galleryAlt} photo ${currentSlide + 1}`;
     counter.textContent = `${String(currentSlide + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
   };
   const scheduleSlides = () => {
@@ -40,7 +58,7 @@ document.querySelectorAll('.room-detail-gallery[data-room-gallery]').forEach((ga
   const createArrow = (label, direction) => {
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = 'room-detail-gallery-arrow';
+    button.className = `room-detail-gallery-arrow${isDiningGallery ? ' dining-gallery-arrow' : ''}`;
     button.setAttribute('aria-label', `${label} photo`);
     button.textContent = direction < 0 ? '‹' : '›';
     button.addEventListener('click', () => {
@@ -51,7 +69,7 @@ document.querySelectorAll('.room-detail-gallery[data-room-gallery]').forEach((ga
   };
   const pause = document.createElement('button');
   pause.type = 'button';
-  pause.className = 'room-detail-gallery-pause';
+  pause.className = `room-detail-gallery-pause${isDiningGallery ? ' dining-gallery-pause' : ''}`;
   pause.addEventListener('click', () => {
     isPaused = !isPaused;
     pause.textContent = isPaused ? '▶' : 'Ⅱ';
@@ -141,6 +159,92 @@ if (roomDetailPage && roomDetailInfo) {
   roomDetailInfo.after(section);
 }
 
+const diningBarSection = document.querySelector('main > .feature-split.reverse');
+const diningClosingCta = document.querySelector('main > .closing-cta');
+if (diningBarSection) {
+  const experiences = [
+    { title: 'Romantic Dinner', image: 'romantic-dinner', details: ['IDR 1,819,000 ++ / Couple'] },
+    { title: 'Floating Breakfast & Lunch', image: 'floating-breakfast', details: ['Floating Breakfast · IDR 375,000 ++ / Boat', 'Floating Lunch · IDR 675,000 ++ / Boat'] },
+    { title: 'Happy Hour', image: 'happy-hour', details: ['IDR 130,000 ++ (Buy 1 Get 2)'] },
+    { title: 'Buy a Bucket of 4 Bottles of Frost Beer', image: 'frost-beer-bucket', details: ['IDR 200,000 ++ / Bucket'] },
+    { title: 'Balinese Cooking Class', image: 'balinese-cooking-class', details: ['IDR 600,000 ++ / Served for 2 Persons'] },
+    { title: 'Cocktail Class (Get 3 Glass Cocktails)', image: 'cocktail-class', details: ['IDR 300,000 ++ / Person'] },
+  ];
+  const section = document.createElement('section');
+  section.className = 'room-explore-section dining-experience-section section-pad';
+  section.setAttribute('aria-labelledby', 'dining-experience-title');
+
+  const heading = document.createElement('h2');
+  heading.id = 'dining-experience-title';
+  heading.textContent = 'Exquisite Dining Experiences';
+
+  const description = document.createElement('p');
+  description.className = 'dining-experience-description';
+  description.textContent = 'Savour exquisite flavours and thoughtfully crafted dishes in the serene tropical setting of Orchid Restaurant & Rose Bar.';
+
+  const carousel = document.createElement('div');
+  carousel.className = 'room-explore-carousel';
+  carousel.setAttribute('role', 'region');
+  carousel.setAttribute('aria-label', 'Exquisite dining experiences');
+  carousel.setAttribute('aria-roledescription', 'carousel');
+
+  const track = document.createElement('div');
+  track.className = 'room-explore-track dining-experience-track';
+  experiences.forEach((experience) => {
+    const card = document.createElement('article');
+    card.className = 'dining-experience-card';
+
+    const image = document.createElement('img');
+    image.src = `assets/images/dining/dining-experience/${experience.image}.webp`;
+    image.alt = experience.title;
+    image.loading = 'lazy';
+
+    const content = document.createElement('div');
+    content.className = 'dining-experience-card-content';
+
+    const title = document.createElement('h3');
+    title.textContent = experience.title;
+    content.append(title);
+    experience.details.forEach((detail) => {
+      const description = document.createElement('p');
+      description.textContent = detail;
+      content.append(description);
+    });
+    const enquiry = document.createElement('a');
+    enquiry.className = 'text-link';
+    enquiry.href = `https://wa.me/6282236655292?text=${encodeURIComponent(`Hello, I would like to enquire about ${experience.title}.`)}`;
+    enquiry.target = '_blank';
+    enquiry.rel = 'noreferrer';
+    enquiry.textContent = 'Make an enquiry';
+    content.append(enquiry);
+
+    card.append(image, content);
+    track.append(card);
+  });
+
+  const controls = document.createElement('div');
+  controls.className = 'room-explore-controls';
+  const makeControl = (direction) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `room-explore-arrow room-explore-arrow-${direction}`;
+    button.setAttribute('aria-label', `${direction === 'previous' ? 'Previous' : 'Next'} dining experiences`);
+    button.textContent = direction === 'previous' ? '‹' : '›';
+    button.addEventListener('click', () => {
+      const card = track.querySelector('.dining-experience-card');
+      if (!card) return;
+      const gap = Number.parseFloat(getComputedStyle(track).gap) || 0;
+      track.scrollBy({ left: (card.getBoundingClientRect().width + gap) * (direction === 'previous' ? -1 : 1), behavior: 'smooth' });
+    });
+    return button;
+  };
+  controls.append(makeControl('previous'), makeControl('next'));
+  carousel.append(track, controls);
+  section.append(heading, description, carousel);
+  if (diningClosingCta) diningClosingCta.before(section);
+  else diningBarSection.after(section);
+}
+
 const updateHeaderScrollState = () => {
   siteHeader?.classList.toggle('is-scrolled', window.scrollY > 0);
 };
@@ -162,7 +266,7 @@ if (heroImage && !heroImage.closest('[data-static-hero]')) {
   const slides = configuredSlides
     ? configuredSlides.split(',').map((src, index) => ({
       src: src.trim(),
-      alt: `Room at The Ning Resort Ubud, slide ${index + 1}`,
+      alt: `${hero.dataset.heroAlt || 'Room at The Ning Resort Ubud'}, slide ${index + 1}`,
     }))
     : [
     { src: 'assets/images/resort-ricefield.webp', alt: 'The Ning Resort among Ubud rice fields' },
