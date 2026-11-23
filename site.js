@@ -2,6 +2,10 @@ const menuToggle = document.querySelector('.menu-toggle');
 const primaryNav = document.querySelector('.primary-nav');
 const siteHeader = document.querySelector('.site-header');
 
+const localizationScript = document.createElement('script');
+localizationScript.src = new URL('site-localization.js', document.currentScript.src).href;
+document.head.append(localizationScript);
+
 document.addEventListener('contextmenu', (event) => {
   if (event.target instanceof Element && event.target.closest('img')) event.preventDefault();
 });
@@ -166,7 +170,7 @@ if (diningBarSection) {
     { title: 'Romantic Dinner', image: 'romantic-dinner', details: ['IDR 1,819,000 ++ / Couple'] },
     { title: 'Floating Breakfast & Lunch', image: 'floating-breakfast', details: ['Floating Breakfast · IDR 375,000 ++ / Boat', 'Floating Lunch · IDR 675,000 ++ / Boat'] },
     { title: 'Happy Hour', image: 'happy-hour', details: ['IDR 130,000 ++ (Buy 1 Get 2)'] },
-    { title: 'Buy a Bucket of 4 Bottles of Frost Beer', image: 'frost-beer-bucket', details: ['IDR 200,000 ++ / Bucket'] },
+    { title: 'Buy a Bucket of 4 Bottles of Prost Beer', image: 'frost-beer-bucket', details: ['IDR 200,000 ++ / Bucket'] },
     { title: 'Balinese Cooking Class', image: 'balinese-cooking-class', details: ['IDR 600,000 ++ / Served for 2 Persons'] },
     { title: 'Cocktail Class (Get 3 Glass Cocktails)', image: 'cocktail-class', details: ['IDR 300,000 ++ / Person'] },
   ];
@@ -243,6 +247,134 @@ if (diningBarSection) {
   section.append(heading, description, carousel);
   if (diningClosingCta) diningClosingCta.before(section);
   else diningBarSection.after(section);
+
+  const galleryItems = [
+    { title: 'A Table Set for Sharing', image: 'gallery-01.webp', description: 'A relaxed dining scene surrounded by the greenery and warmth of Ubud.' },
+    { title: 'A Taste of Bali', image: 'gallery-02.webp', description: 'Discover the ingredients and local flavours that inspire each dish.' },
+    { title: 'An Evening Pour', image: 'gallery-03.svg', description: 'A thoughtfully prepared drink to enjoy as the evening unfolds.' },
+    { title: 'Fresh from the Kitchen', image: 'gallery-04.svg', description: 'Fresh ingredients come together in a colourful celebration of flavour.' },
+    { title: 'A Moment to Savour', image: 'gallery-05.svg', description: 'Take your time and make room for one more memorable taste.' },
+    { title: 'The Art of the Table', image: 'gallery-06.svg', description: 'Small details make every gathering feel special.' },
+    { title: 'Flavours in Season', image: 'gallery-07.svg', description: 'Seasonal produce brings a little colour to every plate.' },
+    { title: 'Made with Care', image: 'gallery-08.svg', description: 'A glimpse into the thoughtful preparation behind each meal.' },
+    { title: 'At the Bar', image: 'gallery-09.svg', description: 'Settle in at Rose Bar for a refreshing drink and good company.' },
+    { title: 'A Slower Pace', image: 'gallery-10.webp', description: 'Enjoy an unhurried moment surrounded by the natural beauty of Bali.' },
+  ];
+  const gallerySection = document.createElement('section');
+  gallerySection.className = 'dining-moments-section';
+  gallerySection.setAttribute('aria-labelledby', 'dining-moments-title');
+
+  const galleryHeading = document.createElement('div');
+  galleryHeading.className = 'dining-moments-heading';
+  const galleryEyebrow = document.createElement('p');
+  galleryEyebrow.className = 'eyebrow';
+  galleryEyebrow.textContent = 'A TASTE OF THE NING';
+  const galleryTitle = document.createElement('h2');
+  galleryTitle.id = 'dining-moments-title';
+  galleryTitle.textContent = 'Dining & Entertainment Gallery';
+  galleryHeading.append(galleryEyebrow, galleryTitle);
+
+  const galleryGrid = document.createElement('div');
+  galleryGrid.className = 'dining-moments-grid';
+  galleryItems.forEach((item, index) => {
+    const tile = document.createElement('button');
+    tile.type = 'button';
+    tile.className = `dining-moments-tile dining-moments-tile-${index + 1}`;
+    tile.setAttribute('aria-label', `Enlarge photo: ${item.title}`);
+
+    const image = document.createElement('img');
+    image.src = `assets/images/dining/gallery/${item.image}`;
+    image.alt = item.title;
+    image.loading = 'lazy';
+
+    const caption = document.createElement('span');
+    caption.className = 'dining-moments-caption';
+    caption.textContent = 'View photo';
+    tile.append(image, caption);
+    tile.addEventListener('click', () => openDiningLightbox(index));
+    galleryGrid.append(tile);
+  });
+  gallerySection.append(galleryHeading, galleryGrid);
+  section.after(gallerySection);
+
+  const lightbox = document.createElement('dialog');
+  lightbox.className = 'dining-lightbox';
+  lightbox.setAttribute('aria-labelledby', 'dining-lightbox-title');
+  const lightboxClose = document.createElement('button');
+  lightboxClose.className = 'dining-lightbox-close';
+  lightboxClose.type = 'button';
+  lightboxClose.setAttribute('aria-label', 'Close enlarged photo');
+  lightboxClose.textContent = '×';
+  const lightboxMedia = document.createElement('div');
+  lightboxMedia.className = 'dining-lightbox-media';
+  const lightboxImage = document.createElement('img');
+  lightboxImage.className = 'dining-lightbox-image';
+  const lightboxPrevious = document.createElement('button');
+  lightboxPrevious.className = 'dining-lightbox-arrow dining-lightbox-previous';
+  lightboxPrevious.type = 'button';
+  lightboxPrevious.setAttribute('aria-label', 'Show previous photo');
+  lightboxPrevious.textContent = '‹';
+  const lightboxNext = document.createElement('button');
+  lightboxNext.className = 'dining-lightbox-arrow dining-lightbox-next';
+  lightboxNext.type = 'button';
+  lightboxNext.setAttribute('aria-label', 'Show next photo');
+  lightboxNext.textContent = '›';
+  lightboxMedia.append(lightboxImage, lightboxPrevious, lightboxNext);
+  const lightboxCaption = document.createElement('div');
+  lightboxCaption.className = 'dining-lightbox-caption';
+  const lightboxTitle = document.createElement('h2');
+  lightboxTitle.id = 'dining-lightbox-title';
+  const lightboxDescription = document.createElement('p');
+  const lightboxCounter = document.createElement('span');
+  lightboxCounter.className = 'dining-lightbox-counter';
+  lightboxCounter.setAttribute('aria-live', 'polite');
+  lightboxCaption.append(lightboxTitle, lightboxDescription, lightboxCounter);
+  lightbox.append(lightboxClose, lightboxMedia, lightboxCaption);
+  document.body.append(lightbox);
+
+  let currentGalleryIndex = 0;
+  const showDiningLightboxImage = (index) => {
+    currentGalleryIndex = (index + galleryItems.length) % galleryItems.length;
+    const item = galleryItems[currentGalleryIndex];
+    lightboxImage.src = `assets/images/dining/gallery/${item.image}`;
+    lightboxImage.alt = item.title;
+    lightboxTitle.textContent = item.title;
+    lightboxDescription.textContent = item.description;
+    lightboxCounter.textContent = `${currentGalleryIndex + 1} / ${galleryItems.length}`;
+  };
+  const openDiningLightbox = (index) => {
+    showDiningLightboxImage(index);
+    lightbox.showModal();
+  };
+  lightboxPrevious.addEventListener('click', () => showDiningLightboxImage(currentGalleryIndex - 1));
+  lightboxNext.addEventListener('click', () => showDiningLightboxImage(currentGalleryIndex + 1));
+  lightbox.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      showDiningLightboxImage(currentGalleryIndex - 1);
+    } else if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      showDiningLightboxImage(currentGalleryIndex + 1);
+    }
+  });
+  let swipeStartX = null;
+  lightboxMedia.addEventListener('pointerdown', (event) => {
+    if (event.pointerType === 'touch') swipeStartX = event.clientX;
+  });
+  lightboxMedia.addEventListener('pointerup', (event) => {
+    if (swipeStartX === null) return;
+    const distance = event.clientX - swipeStartX;
+    swipeStartX = null;
+    if (Math.abs(distance) < 48) return;
+    showDiningLightboxImage(currentGalleryIndex + (distance < 0 ? 1 : -1));
+  });
+  lightboxMedia.addEventListener('pointercancel', () => {
+    swipeStartX = null;
+  });
+  lightboxClose.addEventListener('click', () => lightbox.close());
+  lightbox.addEventListener('click', (event) => {
+    if (event.target === lightbox) lightbox.close();
+  });
 }
 
 const updateHeaderScrollState = () => {
